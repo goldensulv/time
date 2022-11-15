@@ -7,7 +7,7 @@ use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 #[derive(Parser)]
 struct Cli {
     command: String,
-    #[arg(short = 't', long = "times", default_value_t = 1)]
+    #[arg(short = 't', long = "times", default_value_t = 2)]
     times: i32,
 }
 
