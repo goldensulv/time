@@ -1,6 +1,6 @@
 use clap::Parser;
 use std::io::{self, Write};
-use std::process::{Command};
+use std::process::Command;
 use std::time::{self, Duration};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
@@ -25,33 +25,27 @@ fn main() -> io::Result<()> {
         match status {
             Ok(mut child) => {
                 let result = child.wait();
-                match result {
-                    Ok(status) => {
-                        let time = time::Instant::now().duration_since(start);
-                        average_time += time;
-                        stdout
-                            .set_color(ColorSpec::new().set_fg(Some(Color::Magenta)))?;
-                        println!("\nProcess finished with status: {}", status);
-                        let time = format!(
-                            "{} days, {:0>2} hrs {:0>2} min {:0>2} sec {:>3} ms {:>3} us {:>3} ns",
-                            time.as_secs() / 86400,
-                            time.as_secs() / 3600,
-                            time.as_secs() / 60,
-                            time.as_secs() % 60,
-                            time.subsec_millis(),
-                            time.subsec_micros() % 1000,
-                            time.subsec_nanos() % 1000
-                        );
-                        stdout
-                            .set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
-                        println!("Time: {}", time);
-                    }
-                    Err(_) => {}
+                if let Ok(status) = result {
+                    let time = time::Instant::now().duration_since(start);
+                    average_time += time;
+                    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Magenta)))?;
+                    println!("\nProcess finished. {}", status);
+                    let time = format!(
+                        "{} days, {:0>2} hrs {:0>2} min {:0>2} sec {:>3} ms {:>3} us {:>3} ns",
+                        time.as_secs() / 86400,
+                        time.as_secs() / 3600,
+                        time.as_secs() / 60,
+                        time.as_secs() % 60,
+                        time.subsec_millis(),
+                        time.subsec_micros() % 1000,
+                        time.subsec_nanos() % 1000
+                    );
+                    stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
+                    println!("Time: {}", time);
                 }
             }
             Err(e) => {
-                stdout
-                    .set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
+                stdout.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
                 println!("Error: {}", e);
                 error = true;
                 break 'outer;
@@ -71,8 +65,7 @@ fn main() -> io::Result<()> {
             average_time.subsec_micros() % 1000,
             average_time.subsec_nanos() % 1000
         );
-        stdout
-            .set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
+        stdout.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
         println!("\nAverage time for {} runs: {}", args.times, time);
     }
 
