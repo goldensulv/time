@@ -1,6 +1,6 @@
 use clap::Parser;
 use std::io::{self, Write};
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::time::{self, Duration};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
@@ -9,6 +9,8 @@ struct Cli {
     command: String,
     #[arg(short = 't', long = "times", default_value_t = 2)]
     times: i32,
+    #[arg(short = 'o', long = "output", default_value_t = false)]
+    output: bool,
 }
 
 fn parse_time(time: Duration) -> String {
@@ -28,8 +30,11 @@ fn main() -> io::Result<()> {
     let args = Cli::parse();
     let mut stdout = StandardStream::stdout(ColorChoice::Always);
     let mut output = Command::new(&args.command);
-    let mut average_time: Duration = time::Duration::from_secs(0);
+    let mut average_time = time::Duration::from_secs(0);
     let mut error = false;
+    if !args.output {
+        output.stdout(Stdio::null()).stderr(Stdio::null());
+    }
     'outer: for _ in 0..args.times {
         stdout.reset()?;
         stdout.flush()?;
